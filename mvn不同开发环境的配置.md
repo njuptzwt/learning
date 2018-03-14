@@ -20,19 +20,17 @@ spring.profiles.active=peer2,制定了导入不同的开发环境下的配置文
 
 在Resources文件夹下建立自己的resource文件夹，不同的开发环境：
 
-
-
-![1520949223(1)](C:\Users\zhengwentian\Desktop\1520949223(1).png)
+![1520994938(1)](C:\Users\zhengwentian\Desktop\知识图集\1520994938(1).png)
 
 )
 
 然后需要配置在pom文件中配置profiles属性:
 
-![1520949388(1)](C:\Users\zhengwentian\Desktop\1520949388(1).png)
+![1520994979(1)](C:\Users\zhengwentian\Desktop\知识图集\1520994979(1).png)
 
 同时还需要在build中加入以下的build信息:
 
-![1520994397(1)](C:\Users\zhengwentian\Desktop\1520994397(1).png)
+![1520994397(1)](C:\Users\zhengwentian\Desktop\知识图集\1520994397(1).png)
 
 本地run jar包的时候使用:
 
