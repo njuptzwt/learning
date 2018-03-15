@@ -32,4 +32,4 @@ mybatis_config.xml配置的是mybatis的基础配置
 
 强大的返回值resulttype 和resultMap
 
-数据库的配置。
+数据源的配置。
