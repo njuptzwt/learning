@@ -20,6 +20,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 //浏览器端跨域请求，返回Jsonp的格式，如果不是跨域请求，返回Json的格式
+//如果有带callback参数跨域请求，使用Jsonp的格式输出
+//如果没有带callback参数，那么实际上是直接输出的Json格式数据有进行判断
+//可以为springMVC添加解析器，处理自定义的Http请求消息
 public class FastJsonpHttpMessageConverter<T> extends FastJsonHttpMessageConverter {
 
    public static final String CALLBACK = "callback";
@@ -63,6 +66,9 @@ public class FastJsonpHttpMessageConverter<T> extends FastJsonHttpMessageConvert
 @EnableWebMvc
 @ComponentScan("com.netease.mail.vip.juwan.web.controller")
 public class MyMvcConfig extends WebMvcConfigurerAdapter {
+
+
+//该方法不会覆盖其他的消息转换器，默认添加一个消息的转换器。
    @Override
    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
       converters.add(converter());
@@ -90,3 +96,44 @@ public class MyMvcConfig extends WebMvcConfigurerAdapter {
    }
 }
 ```
+知乎上对Jsonp格式的描述：
+
+It's actually not too complicated...
+
+Say you're on domain example.com, and you want to make a request to domain example.net. To do so, you need to cross domain boundaries, a no-no in most of browserland.
+
+The one item that bypasses this limitation is <script> tags. When you use a script tag, the domain limitation is ignored, but under normal circumstances, you can't really **do** anything with the results, the script just gets evaluated.
+
+Enter JSONP. When you make your request to a server that is JSONP enabled, you pass a special parameter that tells the server a little bit about your page. That way, the server is able to nicely wrap up its response in a way that your page can handle.
+
+For example, say the server expects a parameter called "callback" to enable its JSONP capabilities. Then your request would look like:
+
+```
+http://www.example.net/sample.aspx?callback=mycallback
+```
+
+Without JSONP, this might return some basic JavaScript object, like so:
+
+```
+{ foo: 'bar' }
+```
+
+However, with JSONP, when the server receives the "callback" parameter, it wraps up the result a little differently, returning something like this:
+
+```
+mycallback({ foo: 'bar' });
+```
+
+As you can see, it will now invoke the method you specified. So, in your page, you define the callback function:
+
+```
+mycallback = function(data){
+  alert(data.foo);
+};
+```
+
+And now, when the script is loaded, it'll be evaluated, and your function will be executed. Voila, cross-domain requests!
+
+It's also worth noting the one major issue with JSONP: you lose a lot of control of the request. For example, there is no "nice" way to get proper failure codes back. As a result, you end up using timers to monitor the request, etc, which is always a bit suspect. The proposition for [JSONRequest](http://www.json.org/JSONRequest.html)is a great solution to allowing cross domain scripting, maintaining security, and allowing proper control of the request.
+
+These days (2015), [CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing) is the recommended approach vs. JSONRequest. JSONP is still useful for older browser support, but given the security implications, unless you have no choice CORS is the better choice.

@@ -1,0 +1,13 @@
+Mybatis中的多数据源配置：
+
+
+
+https://www.cnblogs.com/lzrabbit/p/3750803.html
+
+
+
+实现多数据源的方法就是我们自定义了一个MultipleDataSource，这个类继承自AbstractRoutingDataSource，而AbstractRoutingDataSource继承自AbstractDataSource ，AbstractDataSource 实现了javax.sql.DataSource接口，所以我们的MultipleDataSource也实现了javax.sql.DataSource接口，可以赋值给sqlSessionFactory的dataSource属性。
+
+
+
+可以看到Spring配置中multipleDataSource设置了两个属性defaultTargetDataSource和targetDataSources，这两个属性定义在AbstractRoutingDataSource，当MyBatis执行查询时会先选择数据源，选择顺序时现根据determineCurrentLookupKey方法返回的值到targetDataSources中去找，若能找到怎返回对应的数据源，若找不到返回默认的数据源defaultTargetDataSource，具体参考AbstractRoutingDataSource的源码

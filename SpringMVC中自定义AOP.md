@@ -15,7 +15,7 @@ Component组件的注解，将切面类注入spring容器中
 Order用来定义切面的执行注入的顺序
 
 ```
-@Around("@annotation(com.netease.mail.vip.juwan.web.annotation.ParamValidate)&&@annotation(paramValidate)")
+@Around("@annotation(com.annotation.ParamValidate)&&@annotation(paramValidate)")
 public BaseResponseVO doAspect(ProceedingJoinPoint joinPoint, ParamValidate paramValidate) {
    System.out.println("enter aspect");
    Errors errors = null;
