@@ -1,0 +1,1 @@
+JsonObeject同步的时候，一定要注意gettter和Setter的对象的名字要设置成一样的！！
