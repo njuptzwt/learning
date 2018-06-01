@@ -1,0 +1,5 @@
+springMVC中传递的参数默认值？
+
+
+
+int类型的数值设计为Integer传递的时候required=false的时候才不会报错，否则会一直报错。如果默认不传递参数的话，会使用默认的null值
