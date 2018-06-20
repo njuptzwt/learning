@@ -19,12 +19,12 @@ SecurityContextHolder定义了SecurityContext
 的相关操作，如初始化，清空，读取等。SecurityContextHolder并没有直接实现这些操作，而是使用了策略模式，
 由一个SecurityContextHolderStrategy接口，来完成真正的逻辑。
 
-![ecurityContextHolde](C:\Users\zhengwentian\Desktop\SecurityContextHolder.png)
+![ecurityContextHolde](C:\Users\zhengwentian\Desktop\知识图集\SecurityContextHolder.png)
 
 initiaze这个方法是初始化，静态方法执行一次，默认是将stratege设置为ThreadLocalSecurityContextHolderStrategy,这种策略下，每个线程关联一个SecurityContext。每次
-都从当前线程读取或存放SecurityContext。一般用于为多个用户服务的服务器，每个用户一个线程。是最常用的模式，也是Spring Security缺省的策略。用户注销时，应该把该用户所在线程的SecurityContext清除掉。(需要保存同一个用户的SecurityContext，Session共享的时候！)，项目使用该方法来在session中保存用户的权限认证信息！）
+都从当前线程读取或存放SecurityContext。**<u>一般用于为多个用户服务的服务器，每个用户一个线程。是最常用的模式，也是Spring Security缺省的策略</u>。（这种情况下，构建多机的服务就需要进行SecurityContext的共享，来授予用户的权限，通过session设置Context)**用户注销时，应该把该用户所在线程的SecurityContext清除掉。(需要保存同一个用户的SecurityContext，Session共享的时候！)，项目使用该方法来在session中保存用户的权限认证信息！）
 
-![trateg](C:\Users\zhengwentian\Desktop\strategy.png)
+![trateg](C:\Users\zhengwentian\Desktop\知识图集\strategy.png)
 
 
 由一个SecurityContextHolderStrategy接口，来完成真正的逻辑。
@@ -33,9 +33,9 @@ initiaze这个方法是初始化，静态方法执行一次，默认是将strate
 GlobalSecurityContextHolderStrategy，在这种策略下，JVM所有的对象共享一个SecurityContext对象。一般在胖客户端使用，一个客户端就是一个用户代理。
       
 
-ThreadLocalSecurityContextHolderStrategy，这种策略下，每个线程关联一个SecurityContext。每次都从当前线程读取或存放SecurityContext。一般用于为多个用户服务的服务器，每个用户一个线程。是最常用的模式，也是Spring Security缺省的策略。用户注销时，应该把该用户所在线程的SecurityContext清除掉。
+ThreadLocalSecurityContextHolderStrategy，**这种策略下，每个线程关联一个SecurityContext。每次都从当前线程读取或存放SecurityContext。一般用于为多个用户服务的服务器，每个用户一个线程。是最常用的模式，也是Spring Security缺省的策略。**用户注销时，应该把该用户所在线程的SecurityContext清除掉。
 
-![hreadLocalStrateg](C:\Users\zhengwentian\Desktop\ThreadLocalStrategy.png)
+![hreadLocalStrateg](C:\Users\zhengwentian\Desktop\知识图集\ThreadLocalStrategy.png)
 
 
 
@@ -49,7 +49,7 @@ InheritableThreadLocalSecurityContextHolderStrategy，这种策略是Inheritable
 
 本项目中遇到的问题以及解决问题的办法：
 
-SecurityContext保存用户的Authentication，在openID认证完之后赋予的Authention，使用sesison保存用户的Authentication
+SecurityContext保存用户的Authentication，在openID认证完之后赋予的Authention，使用sesison保存用户的SecurityContext,来实现多机的SecurityContext的保存。
 
 ```
 // 新增Spring Security的Authority（默认已认证通过），账号为corp邮箱，密码为“”
@@ -61,4 +61,16 @@ request.getSession().setAttribute(SecurityConst.SECURITY_CONTEXTNAME,
       SecurityContextHolder.getContext());
 ```
 
-然后用户每次请求的时候开启一个新的线程，对SecurityContextHolder重新赋值，在session中取值，SecurityContextHolder该对象是一个ThreadLocal类型!!!!多机的时候，线程不同，这个需要在session中共享！！！
+不同服务器对同一个用户分别开启一个线程对SecurityContextHolder重新赋值，在session中取值，SecurityContextHolder该对象是一个ThreadLocal类型!!!!多机的时候，线程不同，这个需要在session中共享！！！当请求进来的时候加一个过滤器，来实现SecurityContextHolder重新赋值！
+
+
+
+```
+SecurityContext context = (SecurityContext) request.getSession()
+      .getAttribute(SecurityConst.SECURITY_CONTEXTNAME);
+LOG.info("get context from request context id={},context={}", request.getSession().getId(),
+      JSONObject.toJSONString(context));
+if (!ObjectUtils.isEmpty(context)) {
+   SecurityContextHolder.setContext(context);
+}
+```
