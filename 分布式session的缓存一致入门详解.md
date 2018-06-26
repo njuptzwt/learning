@@ -1,0 +1,1 @@
+分布式session的缓存一致性原理：https://blog.csdn.net/u010648555/article/details/80531679
