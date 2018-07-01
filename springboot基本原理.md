@@ -36,3 +36,38 @@ springboot常见注解,@controller,@Service，@Param.@Pathvariable,@Autowired等
 
 
 spring boot经典的开发实战，有详细解释。。
+
+
+
+
+
+!!!!!!!
+
+@Configuration
+
+@Bean
+
+等于:
+
+<beans><bean></bean></beans>往spring容器中注入bean
+
+同时spring-boot启动中的时候会自动扫描
+
+@Component,@Service,@Controller,@RestController等注解，将对象注入到Spring容器中
+
+所谓的控制反转：IOC
+
+
+
+原来我们使用一个对象的时候，自己手动创建一个对象使用，Date date=new Date().....例如这样，自己管理对象，但是有了Spring之后，将对象注入到容器中(单例模式)，之后我们需要调用的时候只要跟容器说一声，容器就会把对象建好给我们用，即我们只是发个命令，但是创建管理的工作由容器负责，即所谓的控制反转。
+
+依赖注入：需要使用Bean的时候，使用注解@Autowired获取
+
+
+
+
+
+所谓的面向切面编程：AOP见AOP详解
+
+
+
