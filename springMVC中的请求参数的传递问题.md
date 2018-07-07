@@ -20,3 +20,11 @@ springMVC中的请求参数的传递问题，获取不到参数的问题！
 
 @RequestBody这个一般处理的是在ajax请求中声明contentType: "application/json; charset=utf-8"时候。也就是json数据或者xml(我没用过这个，用的是json)
 
+
+
+
+
+使用:requestBody来接受post数据的时候，如何使用postman来仿真数据！
+
+https://blog.csdn.net/afterlife_qiye/article/details/62218572
+
