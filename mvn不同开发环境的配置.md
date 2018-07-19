@@ -41,3 +41,7 @@ Java -jar -Ptest ....jar运行
 在某个环境下继续使用某个配置文件使用：
 
 --spring.profiles.active=dev来设置跑的环境！
+
+
+
+https://blog.csdn.net/MassiveStars/article/details/53510586，不同环境下的配置方式。资源文件
