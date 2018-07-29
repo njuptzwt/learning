@@ -4,6 +4,10 @@
 
 
 
+https://www.ibm.com/developerworks/cn/java/j-lo-springaopcglib/，动态代理思想和spring AOP相结合
+
+
+
 动态代理的实现步骤归纳总结如下：
 
 
