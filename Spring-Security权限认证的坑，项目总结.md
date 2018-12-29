@@ -78,11 +78,11 @@ https://zhuanlan.zhihu.com/p/27644391
 
 
 
-详解一个请求来的时候，Spring-Security怎么做权限的认证。详解源码，主要是SecurityContextHolder和SecurityContextPersitenceFilter
+详解一个请求来的时候，Spring-Security怎么做权限的认证。详解源码，主要是SecurityContextHolder和SecurityContextPersitenceFilter,SecurityContextRepososity
 
 
 
-SecurityContextHolder：源码
+SecurityContextHolder：源码, 其中的contextHolder是线程局部变量，存储了每一个线程的SecurityContext
 
 ```
 public class SecurityContextHolder {
@@ -162,6 +162,45 @@ public class SecurityContextHolder {
 }
 ```
 
+```
+// 策略模式的示例ThreadLocalSecurityContextHolderStrategy
+final class ThreadLocalSecurityContextHolderStrategy implements
+      SecurityContextHolderStrategy {
+   // ~ Static fields/initializers
+   // =====================================================================================
+
+  // 保存每个线程的安全上下文的线程局部变量
+   private static final ThreadLocal<SecurityContext> contextHolder = new ThreadLocal<SecurityContext>();
+
+   // ~ Methods
+   // ========================================================================================================
+
+   public void clearContext() {
+      contextHolder.remove();
+   }
+
+   public SecurityContext getContext() {
+      SecurityContext ctx = contextHolder.get();
+
+      if (ctx == null) {
+         ctx = createEmptyContext();
+         contextHolder.set(ctx);
+      }
+
+      return ctx;
+   }
+
+   public void setContext(SecurityContext context) {
+      Assert.notNull(context, "Only non-null SecurityContext instances are permitted");
+      contextHolder.set(context);
+   }
+
+   public SecurityContext createEmptyContext() {
+      return new SecurityContextImpl();
+   }
+}
+```
+
 SecurityContextPersistenceFilter源码关键部分：
 
 ```
@@ -188,7 +227,7 @@ public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
         try {
             var13 = true;
             
-            // 当前线程获取SecurityContext
+            // 当前线程设置SecurityContext
             SecurityContextHolder.setContext(contextBeforeChainExecution);
             chain.doFilter(holder.getRequest(), holder.getResponse());
             var13 = false;
@@ -197,7 +236,7 @@ public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
                 SecurityContext contextAfterChainExecution = SecurityContextHolder.getContext();
                 // 结束，清除当前线程的SecurityContext
                 SecurityContextHolder.clearContext();
-                // Session重新保存SecurityContext
+                // Session重新保存最新的SecurityContext上下文
                 this.repo.saveContext(contextAfterChainExecution, holder.getRequest(), holder.getResponse());
                 request.removeAttribute("__spring_security_scpf_applied");
                 if (debug) {
