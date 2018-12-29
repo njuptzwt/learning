@@ -1,0 +1,1 @@
+一个浏览器同web网站通信具有唯一的Sesssion，这个Session使用cookie的方式将SessionID返回给浏览器，浏览器根据这个ID，进行下一次的通信。通过Session可以做很多事情，比如用户的权限拦截，当用户登陆的时候在Session中添加User,有些服务在用户不能登陆的时候不能操作，可以使用Session方式看看用户是否已经登陆.......进行重定向等等操作......Session很重要

@@ -10,4 +10,4 @@ nohup启动的是后台的服务
 
 tail -f ../juwan_log/syncNohup.out 
 
-查看文件的目录
+查看文件的实时输出
